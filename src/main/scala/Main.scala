@@ -7,7 +7,7 @@ import scala.concurrent.duration._
 /**
  * Created by chunyangshen on 9/23/15.
  */
-object Main {
+object Gossip_Pushsum {
   def main(args: Array[String]): Unit = {
 
     val algorithm= args(0)
@@ -24,7 +24,6 @@ object Main {
 
         val maxDup=args(3).toInt
         val gossip = actorsystem.actorOf(Props(classOf[GossipMain], numOfNode,maxDup,topology))
-        import ActorSystem.dispatcher
 
 
       }

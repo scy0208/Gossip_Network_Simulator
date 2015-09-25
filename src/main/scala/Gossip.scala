@@ -25,9 +25,13 @@ class GossipMain(numOfNode:Int, maxDup: Int, topo:String) extends Actor{
   }
   for(i<-0 until numOfNode) {
     val neighbors=new Topology(topo).calNeighbor(i,numOfNode)
-    neighbors.foreach(neighbor=>actorpool(i)!Neighbor(actorpool(neighbor)))
+    for(neighbor<-neighbors) actorpool(i)!Neighbor(actorpool(neighbor))
+    //neighbors.foreach(neighbor=>actorpool(i)!Neighbor(actorpool(neighbor)))
   }
 
+  self!Start
+  import context.dispatcher
+  //context.system.scheduler.scheduleOnce(30 seconds,self,Terminate)
 
   override def receive: Actor.Receive = {
     case Start =>{
@@ -36,11 +40,16 @@ class GossipMain(numOfNode:Int, maxDup: Int, topo:String) extends Actor{
     }
     case Received =>{
       numOfReceived+=1;
-      if(numOfReceived==numOfNode) {
-        println("It took " + (System.currentTimeMillis - starttime) + "ms to converge")
+      if(numOfReceived==actorpool.size) {
+        println(topo+" topology took " + (System.currentTimeMillis - starttime) + "ms to converge")
         context stop self
         context.system.shutdown
       }
+    }
+    case Terminate =>{
+      println("The system doesn't converge in 30 seconds, Receive rate %d/%d".format(numOfReceived,numOfNode))
+      context stop self
+      context.system.shutdown
     }
 
   }
@@ -54,16 +63,22 @@ class GossipNode(main: ActorRef, maxDup: Int) extends Actor {
 
   override def receive: Actor.Receive = {
     case Neighbor(neighbor:ActorRef) =>{
+      //println("registed neighbor"+neighbor.toString())
       neighbors+=neighbor
 
     }
     case Gossip =>{
-      main!Received
+
       goss_dupli+=1;
-      if(goss_dupli==this.maxDup) self!Terminate
-      val num = Random.nextInt(neighbors.size)
+      if(goss_dupli==1) {
+        main!Received
+        //println("got gossip")
+      }
+      if(this.maxDup!=0&&goss_dupli==this.maxDup) self!Terminate
+      val size=neighbors.size
+      val num = Random.nextInt(size)
       import context.dispatcher
-      context.system.scheduler.scheduleOnce(10 milliseconds,neighbors(num),Gossip)
+      context.system.scheduler.scheduleOnce(0 milliseconds,neighbors(num),Gossip)
     }
     case Terminate =>{
       context.stop(self)

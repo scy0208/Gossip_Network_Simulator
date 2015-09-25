@@ -29,8 +29,8 @@ trait Topo_Strategy {
 class Line_Strategy extends Topo_Strategy {
   def calNeighbor(curr: Int, total: Int):ArrayBuffer[Int]= {
     var neighbor =ArrayBuffer[Int]()
-    if (curr >= 0) neighbor+=(curr-1)
-    if (curr < total) neighbor+=(curr+1)
+    if (curr-1 >= 0) neighbor+=(curr-1)
+    if (curr+1 < total) neighbor+=(curr+1)
     return neighbor
   }
 }
@@ -68,9 +68,9 @@ class ThreeD_Strategy extends Topo_Strategy {
     if (i - 1 >= 0) neighbor += (getId(i - 1, j, k, length))
     if (i + 1 < length && getId(i + 1, j, k, length)<total ) neighbor+=(getId(i + 1, j, k, length))
     if (j - 1 >= 0) neighbor+=(getId(i, j - 1, k, length))
-    if (j + 1 < length && getId(i + 1, j, k, length)<total) neighbor+=(getId(i, j + 1, k, length))
+    if (j + 1 < length && getId(i , j+1, k, length)<total) neighbor+=(getId(i, j + 1, k, length))
     if (k - 1 >= 0) neighbor+=(getId(i, j, k - 1, length))
-    if (k + 1 < length && getId(i + 1, j, k, length)<total) neighbor+=(getId(i, j, k + 1, length))
+    if (k + 1 < length && getId(i, j, k+1, length)<total) neighbor+=(getId(i, j, k + 1, length))
     return neighbor
   }
 }
@@ -90,7 +90,7 @@ class ImpThreeD_Strategy extends Topo_Strategy {
     if (i - 1 >= 0) neighbor+=(getId(i - 1, j, length))
     if (i + 1 < length && getId(i + 1, j, length)<total) neighbor+=(getId(i + 1, j, length))
     if (j - 1 >= 0) neighbor+=(getId(i, j - 1, length))
-    if (j + 1 < length && getId(i + 1, j, length)<total) neighbor+=(getId(i, j + 1, length))
+    if (j + 1 < length && getId(i, j+1, length)<total) neighbor+=(getId(i, j + 1, length))
     //val rand: Random = new Random
     var unique: Boolean = false
     var rand_ : Int = Random.nextInt(total)

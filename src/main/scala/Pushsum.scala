@@ -8,14 +8,14 @@ import scala.concurrent.duration._
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
 
-class PushsumMain(numOfNode:Int, topo:String) extends Actor {
+class PushsumMain(numOfNode:Int, convTime:Int, topo:String) extends Actor {
   var actorpool=ArrayBuffer[ActorRef]()
   var starttime:Long=0
   var numOfReceived=0
 
 
   for(i<-0 until numOfNode) {
-    val actor = context.system.actorOf(Props(classOf[PushsumNode],self,i.toDouble,1.toDouble), name = "actor" + i)
+    val actor = context.system.actorOf(Props(classOf[PushsumNode],self,i.toDouble,1.toDouble,convTime), name = "actor" + i)
     actorpool += actor
   }
   for(i<-0 until numOfNode) {
@@ -50,7 +50,7 @@ class PushsumMain(numOfNode:Int, topo:String) extends Actor {
 
 }
 
-class PushsumNode(main: ActorRef, var s: Double, var  w: Double) extends Actor {
+class PushsumNode(main: ActorRef, var s: Double, var  w: Double, convTime:Int) extends Actor {
   var neighbors=ArrayBuffer[ActorRef]()
   val MIN = 0.000000000001
   var lastRecord:Double=0
@@ -70,7 +70,7 @@ class PushsumNode(main: ActorRef, var s: Double, var  w: Double) extends Actor {
       if(Math.abs(s/w-lastRecord)<MIN) {
         convergeTime += 1
         //main ! Received
-        if(convergeTime==10) {
+        if(convergeTime==convTime) {
           println("%s converged at value s=%f w=%f s/w=%f converged time=%d error=%f".format(self,this.s,this.w, s/w,convergeTime,(s/w-lastRecord)/MIN ))
           main ! Received
           //self ! Terminate

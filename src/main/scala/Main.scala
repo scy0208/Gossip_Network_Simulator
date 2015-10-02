@@ -25,7 +25,8 @@ object Gossip_Pushsum {
         val gossip = actorsystem.actorOf(Props(classOf[GossipMain], numOfNode,maxDup,topology))
       }
       case "pushsum" =>{
-        val pushsum = actorsystem.actorOf(Props(classOf[PushsumMain], numOfNode,topology))
+        val convTime=args(3).toInt
+        val pushsum = actorsystem.actorOf(Props(classOf[PushsumMain], numOfNode,convTime,topology))
       }
     }
   }

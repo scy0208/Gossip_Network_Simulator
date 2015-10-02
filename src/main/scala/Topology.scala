@@ -107,9 +107,3 @@ class ImpThreeD_Strategy extends Topo_Strategy {
     return neighbor
   }
 }
-
-object main extends App {
-  var top= new Topology("imp3d")
-  var nei=top.calNeighbor(67,125)
-  for(num <- nei) println(num)
-}

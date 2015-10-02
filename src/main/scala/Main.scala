@@ -13,22 +13,19 @@ object Gossip_Pushsum {
     val algorithm= args(0)
     val numOfNode=args(1).toInt
     val topology=args(2)
-
-    algorithm match {
-      case "gossip" =>{
-        val actorsystem = ActorSystem("actorsystem", ConfigFactory.load(ConfigFactory.parseString("""
+    val actorsystem = ActorSystem("actorsystem", ConfigFactory.load(ConfigFactory.parseString("""
   akka {
     log-dead-letters = off
   }
-                                                                                                  """)))
+                                                                                              """)))
 
+    algorithm match {
+      case "gossip" =>{
         val maxDup=args(3).toInt
         val gossip = actorsystem.actorOf(Props(classOf[GossipMain], numOfNode,maxDup,topology))
-
-
       }
       case "pushsum" =>{
-
+        val pushsum = actorsystem.actorOf(Props(classOf[PushsumMain], numOfNode,topology))
       }
     }
   }

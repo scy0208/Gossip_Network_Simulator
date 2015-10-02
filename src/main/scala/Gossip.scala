@@ -11,8 +11,10 @@ import scala.collection.mutable.ArrayBuffer
  * Created by chunyangshen on 9/22/15.
  */
 
-class GossipMain(numOfNode:Int, maxDup: Int, topo:String) extends Actor{
 
+
+
+class GossipMain(numOfNode:Int, maxDup: Int, topo:String) extends Actor{
 
   var actorpool=ArrayBuffer[ActorRef]()
   var starttime:Long=0
@@ -24,7 +26,7 @@ class GossipMain(numOfNode:Int, maxDup: Int, topo:String) extends Actor{
     actorpool += actor
   }
   for(i<-0 until numOfNode) {
-    val neighbors=new Topology(topo).calNeighbor(i,numOfNode)
+    val neighbors=new Topology(topo).calNeighbor(i,numOfNode)         //strategy pattern
     for(neighbor<-neighbors) actorpool(i)!Neighbor(actorpool(neighbor))
     //neighbors.foreach(neighbor=>actorpool(i)!Neighbor(actorpool(neighbor)))
   }
@@ -75,8 +77,7 @@ class GossipNode(main: ActorRef, maxDup: Int) extends Actor {
         //println("got gossip")
       }
       if(this.maxDup!=0&&goss_dupli==this.maxDup) self!Terminate
-      val size=neighbors.size
-      val num = Random.nextInt(size)
+      val num = Random.nextInt(neighbors.size)
       import context.dispatcher
       context.system.scheduler.scheduleOnce(0 milliseconds,neighbors(num),Gossip)
     }
